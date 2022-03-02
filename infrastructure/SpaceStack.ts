@@ -9,7 +9,12 @@ import { GenericTable } from './GenericTable'
 export class SpaceStack extends Stack {
 
   private api = new RestApi(this, 'SpaceApi')
-  private spacesTable = new GenericTable('SpacesTable', 'spaceId', this)
+  // private spacesTable = new GenericTable('SpacesTable', 'spaceId', this)
+  private spacesTable = new GenericTable(this, {
+    tableName: 'SpacesTable',
+    primaryKey: 'spaceId',
+    createLambdaPath: 'Create'
+  })
 
   constructor (scope: Construct, id: string, props: StackProps) {
     super(scope, id, props)
@@ -27,6 +32,9 @@ export class SpaceStack extends Stack {
     const helloLambdaNodeJsIntegration = new LambdaIntegration(helloLambdaNodeJs)
     const helloLambdaNodeJsResource = this.api.root.addResource('helloNodeJs')
     helloLambdaNodeJsResource.addMethod('Get', helloLambdaNodeJsIntegration)
+
+    const spaceResource = this.api.root.addResource('spaces')
+    spaceResource.addMethod('POST', this.spacesTable.createLambdaIntegration)
   }
 
 }

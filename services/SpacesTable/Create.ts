@@ -2,6 +2,7 @@ import { v4 } from 'uuid'
 import { DynamoDB } from 'aws-sdk'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
 
+const TABLE_NAME = process.env.TABLE_NAME;
 const dbClient = new DynamoDB.DocumentClient();
 
 export const handler = async (event: APIGatewayProxyEvent, _context: Context): Promise<APIGatewayProxyResult> => {
@@ -18,7 +19,7 @@ export const handler = async (event: APIGatewayProxyEvent, _context: Context): P
 
   try {
     const operationResult = await dbClient.put({
-      TableName: 'SpacesTable',
+      TableName: TABLE_NAME!,
       Item: item
     }).promise()
 

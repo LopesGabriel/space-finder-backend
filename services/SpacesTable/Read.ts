@@ -6,7 +6,7 @@ const PRIMARY_KEY = process.env.PRIMARY_KEY;
 const dbClient = new DynamoDB.DocumentClient();
 
 export const handler = async (event: APIGatewayProxyEvent, _context: Context): Promise<APIGatewayProxyResult> => {
-  const result: APIGatewayProxyResult = {
+  let result: APIGatewayProxyResult = {
     statusCode: 200,
     body: 'Hello from DynamoDB'
   }
@@ -26,6 +26,17 @@ export const handler = async (event: APIGatewayProxyEvent, _context: Context): P
           }
         }).promise()
 
+        if (queryResponse.Count! < 1) {
+          result = {
+            statusCode: 404,
+            body: JSON.stringify({
+              message: `Could not find resource with id ${keyValue}`
+            })
+          }
+
+          return result
+        }
+
         result.body = JSON.stringify(queryResponse.Items![0])
       }
     } else {
@@ -36,8 +47,7 @@ export const handler = async (event: APIGatewayProxyEvent, _context: Context): P
       result.body = JSON.stringify(queryResponse)
     }
   } catch(err: any) {
-    result.body = err.message
-    result.statusCode = 500
+    result = { statusCode: 500, body: err.message }
   }
 
   return result

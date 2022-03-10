@@ -26,7 +26,7 @@ export const handler = async (event: APIGatewayProxyEvent, _context: Context): P
           }
         }).promise()
 
-        result.body = JSON.stringify(queryResponse.Items)
+        result.body = JSON.stringify(queryResponse.Items![0])
       }
     } else {
       const queryResponse = await dbClient.scan({
